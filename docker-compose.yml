@@ -1,20 +1,21 @@
 version: '3.9'
 
 services:
-  app:
+  cattrapp:
     build: .
+    ports:
+      - "8380:80"
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - backend_storage:/app/storage
+      - /home/server/common/cattr/storage:/app/storage
     labels:
       traefik.enable: true
     networks:
-      - default
-      - web
+      - cattr
 
-  db:
+  cattrdb:
     image: percona:8.0
     environment:
       - MYSQL_DATABASE=cattr
@@ -22,17 +23,16 @@ services:
     cap_add:
       - SYS_NICE
     volumes:
-      - database:/var/lib/mysql
+      - /home/server/common/cattr/mysql_data:/var/lib/mysql
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '--password=password', '-u', 'root']
       timeout: 20s
       retries: 10
+    networks:
+      - cattr
 
-volumes:
-  backend_storage: {}
-  database: {}
 
 networks:
-  default: {}
-  web:
-    external: true
+  networks:
+  cattr:
+    driver: bridge
