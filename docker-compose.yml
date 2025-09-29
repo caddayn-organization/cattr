@@ -6,7 +6,7 @@ services:
     ports:
       - "8380:80"
     depends_on:
-      db:
+      cattrdb:
         condition: service_healthy
     volumes:
       - /home/server/common/cattr/storage:/app/storage
